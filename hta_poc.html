@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTA - Human Trafficking Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .mockup-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .phone {
+            width: 280px;
+            height: 580px;
+            background: #1a1a1a;
+            border-radius: 35px;
+            padding: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 30px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(79,172,254,0.3);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .alert-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .alert-high {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .alert-high .alert-title {
+            color: #721c24;
+        }
+
+        .alert-details {
+            font-size: 12px;
+            color: #6c5ce7;
+            margin-bottom: 10px;
+        }
+
+        .location-pin {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #e74c3c;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .report-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,184,148,0.3);
+        }
+
+        .btn-emergency {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            margin-bottom: 15px;
+        }
+
+        .map-view {
+            background: #e8f5e8;
+            border-radius: 10px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .map-markers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .marker-red { background: #e74c3c; top: 30%; left: 40%; }
+        .marker-yellow { background: #f39c12; top: 60%; left: 70%; }
+        .marker-blue { background: #3498db; top: 45%; left: 25%; }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .case-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #6c5ce7;
+        }
+
+        .case-id {
+            font-size: 12px;
+            color: #636e72;
+            margin-bottom: 5px;
+        }
+
+        .case-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .case-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: #ffeaa7; color: #fdcb6e; }
+        .status-resolved { background: #55efc4; color: #00b894; }
+        .status-critical { background: #fab1a0; color: #e17055; }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: #636e72;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #6c5ce7;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .nav-item.active .nav-icon {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .ai-insight {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .ai-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-icon {
+            width: 20px;
+            height: 20px;
+            background: #6c5ce7;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            border-radius: 3px;
+            animation: progress 2s ease-in-out;
+        }
+
+        @keyframes progress {
+            from { width: 0%; }
+        }
+
+        .screen-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <!-- Dashboard Screen -->
+        <div class="phone">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>●●●○○</span>
+                    <span>🔋 87%</span>
+                </div>
+                <div class="header">
+                    <h1>HTA Dashboard</h1>
+                    <p>Human Trafficking Analyzer</p>
+                </div>
+                <div class="content" style="padding-bottom: 60px;">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">247</div>
+                            <div class="stat-label">Active Cases</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">High Risk Alerts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">1,834</div>
+                            <div class="stat-label">Data Points</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">94%</div>
+                            <div class="stat-label">AI Accuracy</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-insight">
+                        <div class="ai-title">
+                            <div class="ai-icon">AI</div>
+                            Latest AI Insights
+                        </div>
+                        <p style="font-size: 12px; color: #636e72; margin-bottom: 8px;">
+                            Pattern detected: Increased activity in coastal regions
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%;"></div>
+                        </div>
+                        <p style="font-size: 10px; color: #636e72;">Confidence: 78%</p>
+                    </div>
+
+                    <div class="alert-section alert-high">
+                        <div class="alert-title">🚨 Critical Alert</div>
+                        <div class="alert-details">
+                            <span class="location-pin"></span>
+                            Suspicious activity detected in Port Area
+                        </div>
+                        <p style="font-size: 11px; color: #721c24;">
+                            Multiple indicators suggest potential trafficking route
+                        </p>
+                    </div>
+
+                    <div class="alert-section">
+                        <div class="alert-title">⚠️ Medium Priority</div>
+                        <div class="alert-details">
+                            <span class="location-pin"></span>
+                            Unusual movement patterns identified
+                        </div>
+                        <p style="font-size: 11px; color: #856404;">
+                            Requires further investigation
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <div class="nav-icon">📊</div>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">🗺️</div>
+                        <span>Map</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">📝</div>
+                        <span>Report</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">📋</div>
+                        <span>Cases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map View Screen -->
+        <div class="phone">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>●●●○○</span>
+                    <span>🔋 87%</span>
+                </div>
+                <div class="header">
+                    <h1>Risk Mapping</h1>
+                    <p>Real-time threat analysis</p>
+                </div>
+                <div class="content" style="padding-bottom: 60px;">
+                    <div class="nav-tabs">
+                        <div class="nav-tab active">Heat Map</div>
+                        <div class="nav-tab">Incidents</div>
+                        <div class="nav-tab">Routes</div>
+                    </div>
+
+                    <div class="map-view">
+                        <div class="map-markers">
+                            <div class="marker marker-red" title="High Risk"></div>
+                            <div class="marker marker-yellow" title="Medium Risk"></div>
+                            <div class="marker marker-blue" title="Low Risk"></div>
+                        </div>
+                        <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9); padding: 8px; border-radius: 5px; font-size: 10px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                                <div style="width: 12px; height: 12px; background: #e74c3c; border-radius: 50%; margin-right: 5px;"></div>
+                                High Risk
+                            </div>
+                            <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                                <div style="width: 12px; height: 12px; background: #f39c12; border-radius: 50%; margin-right: 5px;"></div>
+                                Medium Risk
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 12px; height: 12px; background: #3498db; border-radius: 50%; margin-right: 5px;"></div>
+                                Low Risk
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ai-insight">
+                        <div class="ai-title">
+                            <div class="ai-icon">🎯</div>
+                            Risk Assessment
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-size: 12px;">Current Area Risk</span>
+                            <span style="font-size: 12px; font-weight: bold; color: #e74c3c;">High</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%; background: linear-gradient(90deg, #e74c3c, #c0392b);"></div>
+                        </div>
+                    </div>
+
+                    <div class="case-item">
+                        <div class="case-id">Alert #HT2024-001</div>
+                        <div class="case-title">Suspicious Vehicle Movement</div>
+                        <div class="case-status status-critical">Critical</div>
+                        <p style="font-size: 11px; color: #636e72; margin-top: 8px;">
+                            Vehicle tracked making unusual stops at multiple locations
+                        </p>
+                    </div>
+
+                    <div class="case-item">
+                        <div class="case-id">Alert #HT2024-002</div>
+                        <div class="case-title">Communication Pattern Analysis</div>
+                        <div class="case-status status-active">Active</div>
+                        <p style="font-size: 11px; color: #636e72; margin-top: 8px;">
+                            AI detected suspicious communication patterns
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <div class="nav-icon">📊</div>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item active">
+                        <div class="nav-icon">🗺️</div>
+                        <span>Map</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">📝</div>
+                        <span>Report</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">📋</div>
+                        <span>Cases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Screen -->
+        <div class="phone">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>●●●○○</span>
+                    <span>🔋 87%</span>
+                </div>
+                <div class="header">
+                    <h1>Report Incident</h1>
+                    <p>Secure & Anonymous Reporting</p>
+                </div>
+                <div class="content" style="padding-bottom: 60px;">
+                    <button class="btn-primary btn-emergency">
+                        🚨 Emergency Report
+                    </button>
+
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label class="form-label">Incident Type</label>
+                            <select class="form-input">
+                                <option>Select incident type...</option>
+                                <option>Suspicious Activity</option>
+                                <option>Potential Trafficking</option>
+                                <option>Unusual Movement</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-input" placeholder="Enter location or use GPS">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Date & Time</label>
+                            <input type="datetime-local" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input form-textarea" placeholder="Describe what you observed..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Priority Level</label>
+                            <div style="display: flex; gap: 10px; margin-top: 8px;">
+                                <button style="flex: 1; padding: 8px; background: #00b894; color: white; border: none; border-radius: 5px; font-size: 12px;">Low</button>
+                                <button style="flex: 1; padding: 8px; background: #fdcb6e; color: white; border: none; border-radius: 5px; font-size: 12px;">Medium</button>
+                                <button style="flex: 1; padding: 8px; background: #e17055; color: white; border: none; border-radius: 5px; font-size: 12px;">High</button>
+                            </div>
+                        </div>
+
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 8px; margin: 15px 0;">
+                            <p style="font-size: 11px; color: #00b894; text-align: center;">
+                                🔒 Your report is encrypted and anonymous
+                            </p>
+                        </div>
+
+                        <button class="btn-primary">
+                            Submit Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <div class="nav-icon">📊</div>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">🗺️</div>
+                        <span>Map</span>
+                    </div>
+                    <div class="nav-item active">
+                        <div class="nav-icon">📝</div>
+                        <span>Report</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">📋</div>
+                        <span>Cases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cases Management Screen -->
+        <div class="phone">
+            <div class="screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>●●●○○</span>
+                    <span>🔋 87%</span>
+                </div>
+                <div class="header">
+                    <h1>Case Management</h1>
+                    <p>Track & analyze incidents</p>
+                </div>
+                <div class="content" style="padding-bottom: 60px;">
+                    <div class="nav-tabs">
+                        <div class="nav-tab active">Active</div>
+                        <div class="nav-tab">Resolved</div>
+                        <div class="nav-tab">AI Analysis</div>
+                    </div>
+
+                    <div class="ai-insight">
+                        <div class="ai-title">
+                            <div class="ai-icon">🤖</div>
+                            AI Pattern Recognition
+                        </div>
+                        <p style="font-size: 12px; color: #636e72; margin-bottom: 8px;">
+                            3 cases show similar patterns - potential network detected
+                        </p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 92%;"></div>
+                        </div>
+                        <p style="font-size: 10px; color: #636e72;">Match confidence: 92%</p>
+                    </div>
+
+                    <div class="case-item">
+                        <div class="case-id">Case #HT-2024-015</div>
+                        <div class="case-title">Cross-Border Movement Analysis</div>
+                        <div class="case-status status-critical">Critical</div>
+                        <p style="font-size: 11px; color: #636e72; margin-top: 8px;">
+                            AI flagged unusual patterns across multiple checkpoints
+                        </p>
+                        <div style="margin-top: 10px; font-size: 10px; color: #6c5ce7;">
+                            🔗 Linked to 2 other cases
+                        </div>
+                    </div>
+
+                    <div class="case-item">
+                        <div class="case-id">Case #HT-2024-014</div>
+                        <div class="case-title">Communication Network Detection</div>
+                        <div class="case-status status-active">Active</div>
+                        <p style="font-size: 11px; color: #636e72; margin-top: 8px;">
+                            Machine learning identified suspicious communication cluster
+                        </p>
+                        <div style="margin-top: 10px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 3px;">
+                                <span>Analysis Progress</span>
+                                <span>67%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 67%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="case-item">
+                        <div class="case-id">Case #HT-2024-013</div>
+                        <div class="case-title">Vehicle Tracking Anomaly</div>
+                        <div class="case-status status-resolved">Resolved</div>
+                        <p style="font-size: 11px; color: #636e72; margin-top: 8px;">
+                            False positive - legitimate transportation service
+                        </p>
+                    </div>
+
+                    <div class="case-item">
+                        <div class="case-id">Case #HT-2024-012</div>
+                        <div class="case-title">Financial Transaction Pattern</div>
+                        <div class="case-status status-active">Active</div>
+                        <p style="font-size: 11px; color: #636e72; margin-top: 8px;">
+                            Blockchain analysis revealed suspicious fund transfers
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <div class="nav-icon">📊</div>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">🗺️</div>
+                        <span>Map</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">📝</div>
+                        <span>Report</span>
+                    </div>
+                    <div class="nav-item active">
+                        <div class="nav-icon">📋</div>
+                        <span>Cases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive animations
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // Simulate real-time data updates
+        setInterval(() => {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const currentValue = parseInt(stat.textContent);
+                if (Math.random() > 0.7) {
+                    stat.style.color = '#e74c3c';
+                    setTimeout(() => {
+                        stat.style.color = 'white';
+                    }, 500);
+                }
+            });
+        }, 3000);
+    </script>
+</body>
+</html>
