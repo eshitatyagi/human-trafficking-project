@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Trafficking Dataset & Analysis - Eshita Tyagi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .poster-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .poster-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+        }
+        
+        .header {
+            padding: 40px 50px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            position: relative;
+        }
+        
+        .title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            color: #555;
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+        
+        .author-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .author-details h3 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .author-details p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px 50px;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .section:hover::before {
+            left: 100%;
+        }
+        
+        .section:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #e74c3c;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 5px;
+        }
+        
+        .findings-list {
+            list-style: none;
+        }
+        
+        .findings-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .findings-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .bullet {
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+        
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .method-item {
+            background: rgba(69, 183, 209, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #45b7d1;
+        }
+        
+        .method-item h4 {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .method-item p {
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .tech-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px 50px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .github-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .github-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .acknowledgment {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .poster-container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+            
+            .title {
+                font-size: 2.2rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                padding: 25px 25px;
+                gap: 20px;
+            }
+            
+            .header, .footer {
+                padding: 25px 25px;
+            }
+            
+            .stats-grid, .methodology-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .author-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes rotateIn {
+            from {
+                opacity: 0;
+                transform: rotate(-10deg) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(0deg) scale(1);
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translateY(-50px);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05) translateY(-10px);
+            }
+            70% {
+                transform: scale(0.9) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            }
+            50% {
+                box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            }
+        }
+        
+        @keyframes typewriter {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+        
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+        
+        .title {
+            animation: bounceIn 1.2s ease-out, pulse 2s infinite 2s;
+        }
+        
+        .subtitle {
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+        
+        .author-info {
+            animation: scaleIn 0.6s ease 1s both;
+        }
+        
+        .section:nth-child(odd) {
+            animation: slideInLeft 0.8s ease forwards;
+        }
+        
+        .section:nth-child(even) {
+            animation: slideInRight 0.8s ease forwards;
+        }
+        
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.4s; }
+        .section:nth-child(3) { animation-delay: 0.6s; }
+        .section:nth-child(4) { animation-delay: 0.8s; }
+        .section:nth-child(5) { animation-delay: 1.0s; }
+        .section:nth-child(6) { animation-delay: 1.2s; }
+        
+        .stat-item {
+            animation: bounceIn 0.6s ease both;
+            animation-delay: var(--delay);
+        }
+        
+        .stat-item:nth-child(1) { --delay: 1.4s; }
+        .stat-item:nth-child(2) { --delay: 1.6s; }
+        .stat-item:nth-child(3) { --delay: 1.8s; }
+        .stat-item:nth-child(4) { --delay: 2.0s; }
+        
+        .findings-list li {
+            opacity: 0;
+            animation: slideInLeft 0.5s ease forwards;
+            animation-delay: var(--item-delay);
+        }
+        
+        .findings-list li:nth-child(1) { --item-delay: 1.5s; }
+        .findings-list li:nth-child(2) { --item-delay: 1.7s; }
+        .findings-list li:nth-child(3) { --item-delay: 1.9s; }
+        .findings-list li:nth-child(4) { --item-delay: 2.1s; }
+        .findings-list li:nth-child(5) { --item-delay: 2.3s; }
+        
+        .method-item {
+            opacity: 0;
+            animation: rotateIn 0.6s ease forwards;
+            animation-delay: var(--method-delay);
+        }
+        
+        .method-item:nth-child(1) { --method-delay: 1.6s; }
+        .method-item:nth-child(2) { --method-delay: 1.8s; }
+        .method-item:nth-child(3) { --method-delay: 2.0s; }
+        .method-item:nth-child(4) { --method-delay: 2.2s; }
+        
+        .tech-tag {
+            opacity: 0;
+            animation: bounceIn 0.4s ease forwards;
+            animation-delay: var(--tag-delay);
+        }
+        
+        .tech-tag:nth-child(1) { --tag-delay: 2.0s; }
+        .tech-tag:nth-child(2) { --tag-delay: 2.1s; }
+        .tech-tag:nth-child(3) { --tag-delay: 2.2s; }
+        .tech-tag:nth-child(4) { --tag-delay: 2.3s; }
+        .tech-tag:nth-child(5) { --tag-delay: 2.4s; }
+        .tech-tag:nth-child(6) { --tag-delay: 2.5s; }
+        .tech-tag:nth-child(7) { --tag-delay: 2.6s; }
+        .tech-tag:nth-child(8) { --tag-delay: 2.7s; }
+        .tech-tag:nth-child(9) { --tag-delay: 2.8s; }
+        .tech-tag:nth-child(10) { --tag-delay: 2.9s; }
+        
+        .icon {
+            animation: rotateIn 0.8s ease forwards;
+            animation-delay: var(--icon-delay);
+        }
+        
+        .section:nth-child(1) .icon { --icon-delay: 0.4s; }
+        .section:nth-child(2) .icon { --icon-delay: 0.6s; }
+        .section:nth-child(3) .icon { --icon-delay: 0.8s; }
+        .section:nth-child(4) .icon { --icon-delay: 1.0s; }
+        .section:nth-child(5) .icon { --icon-delay: 1.2s; }
+        .section:nth-child(6) .icon { --icon-delay: 1.4s; }
+        
+        .bullet {
+            animation: scaleIn 0.3s ease forwards;
+            animation-delay: var(--bullet-delay);
+        }
+        
+        .github-link {
+            animation: float 3s ease-in-out infinite 3s;
+        }
+        
+        .poster-container::before {
+            animation: shimmer 3s ease-in-out infinite;
+            background-size: 1000px 100%;
+            background-image: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+        }
+    </style>
+</head>
+<body>
+    <div class="poster-container">
+        <div class="header">
+            <h1 class="title">Human Trafficking Dataset & Analysis</h1>
+            <p class="subtitle">Data-Driven Insights for Fighting Modern Slavery</p>
+            <div class="author-info">
+                <div class="author-details">
+                    <h3>Eshita Tyagi</h3>
+                    <p>Eshitatyagi52@gmail.com</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon" style="background: #e74c3c;">📊</span>
+                    Global Impact Statistics
+                </h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">24.9M</span>
+                        <span class="stat-label">Victims Trapped</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">$150B</span>
+                        <span class="stat-label">Annual Revenue (2015)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">71%</span>
+                        <span class="stat-label">Women & Girls</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">25%</span>
+                        <span class="stat-label">Children Under 18</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon" style="background: #3498db;">🔬</span>
+                    Dataset Creation
+                </h2>
+                <div class="methodology-grid">
+                    <div class="method-item">
+                        <h4>Data Collection</h4>
+                        <p>Reviewed 2000+ news articles from verified sources (2014-2019)</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Quality Control</h4>
+                        <p>Used Alexa.com rankings ≤100 for source reliability verification</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Final Dataset</h4>
+                        <p>302 authentic cases across 10 key dimensions</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Secondary Data</h4>
+                        <p>CTDC dataset: 90k+ cases (2004-2018) with extensive cleaning</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon" style="background: #9b59b6;">🌍</span>
+                    Geographic Patterns
+                </h2>
+                <ul class="findings-list">
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>USA & Malaysia</strong> show highest female victim rates</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>USA</strong> appears as both source and destination hotspot</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>Thailand & Indonesia</strong> are primary destination countries</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>India</strong> shows high trafficking volume to other countries</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>Italy sting operation</strong> rescued ~1200 victims</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon" style="background: #f39c12;">👥</span>
+                    Demographics & Categories
+                </h2>
+                <ul class="findings-list">
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>Women (≥18 years)</strong> are most frequent victims</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>Age 9-17</strong> most targeted among children</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>Ages 30-38</strong> highly affected (labor trafficking)</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>Sexual Exploitation & Labor:</strong> 46.9% of cases</span>
+                    </li>
+                    <li>
+                        <span class="bullet"></span>
+                        <span><strong>59.4%</strong> of victims knew their trafficker</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section full-width">
+                <h2 class="section-title">
+                    <span class="icon" style="background: #27ae60;">💻</span>
+                    Technologies & Methodology
+                </h2>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Pandas & NumPy</span>
+                    <span class="tech-tag">Matplotlib</span>
+                    <span class="tech-tag">Seaborn</span>
+                    <span class="tech-tag">Web Scraping</span>
+                    <span class="tech-tag">Statistical Analysis</span>
+                    <span class="tech-tag">Data Visualization</span>
+                    <span class="tech-tag">Scikit-learn</span>
+                    <span class="tech-tag">Jupyter Notebooks</span>
+                    <span class="tech-tag">Plotly</span>
+                </div>
+            </div>
+
+            <div class="section full-width">
+                <h2 class="section-title">
+                    <span class="icon" style="background: #e67e22;">🎯</span>
+                    Key Dataset Features (10 Dimensions)
+                </h2>
+                <div class="methodology-grid">
+                    <div class="method-item">
+                        <h4>Source & Location</h4>
+                        <p>URL, Origin country, Destination country, City of crime</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Victim Demographics</h4>
+                        <p>Number of people, Ages, Male/Female victim counts</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Crime Classification</h4>
+                        <p>Category/type of trafficking, Date of occurrence</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Temporal Analysis</h4>
+                        <p>Year-over-year trends showing increasing crime rates</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-content">
+                <div class="acknowledgment">
+                    Originally developed for Big Data & Policing (S19CSE583) at IIIT Hyderabad
+                </div>
+                <a href="https://github.com/eshitatyagi/human-trafficking-project" class="github-link" target="_blank">
+                    <span>🔗</span>
+                    View Project on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intersection Observer for scroll-triggered animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all sections
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Enhanced stat items with counter animation
+            const statItems = document.querySelectorAll('.stat-item');
+            statItems.forEach((item, index) => {
+                const number = item.querySelector('.stat-number');
+                const finalValue = number.textContent;
+                
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1) rotate(2deg)';
+                    this.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    this.style.background = 'linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2))';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) rotate(0deg)';
+                    this.style.background = 'linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1))';
+                });
+
+                // Counter animation
+                setTimeout(() => {
+                    animateCounter(number, finalValue);
+                }, 2000 + index * 200);
+            });
+
+            // Counter animation function
+            function animateCounter(element, target) {
+                const isNumber = !isNaN(parseFloat(target.replace(/[^\d.]/g, '')));
+                if (!isNumber) return;
+                
+                const targetNum = parseFloat(target.replace(/[^\d.]/g, ''));
+                const suffix = target.replace(/[\d.]/g, '');
+                const duration = 1500;
+                const steps = 60;
+                const increment = targetNum / steps;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= targetNum) {
+                        current = targetNum;
+                        clearInterval(timer);
+                    }
+                    
+                    let displayValue = current.toFixed(1);
+                    if (displayValue.endsWith('.0')) {
+                        displayValue = displayValue.slice(0, -2);
+                    }
+                    element.textContent = displayValue + suffix;
+                }, duration / steps);
+            }
+
+            // Enhanced method items with stagger effect
+            const methodItems = document.querySelectorAll('.method-item');
+            methodItems.forEach((item, index) => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.05)';
+                    this.style.background = 'rgba(69, 183, 209, 0.25)';
+                    this.style.borderLeft = '6px solid #45b7d1';
+                    this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.background = 'rgba(69, 183, 209, 0.1)';
+                    this.style.borderLeft = '4px solid #45b7d1';
+                });
+
+                item.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-5px) scale(1.05)';
+                    }, 150);
+                });
+            });
+
+            // Animated tech tags with wave effect
+            const techTags = document.querySelectorAll('.tech-tag');
+            techTags.forEach((tag, index) => {
+                tag.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.1) rotate(2deg)';
+                    this.style.background = 'linear-gradient(135deg, #764ba2, #667eea)';
+                    this.style.boxShadow = '0 8px 25px rgba(118, 75, 162, 0.4)';
+                    this.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                });
+                
+                tag.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1) rotate(0deg)';
+                    this.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Create wave animation effect on tech tags
+            function createWaveEffect() {
+                techTags.forEach((tag, index) => {
+                    setTimeout(() => {
+                        tag.style.transform = 'translateY(-3px)';
+                        tag.style.transition = 'transform 0.3s ease';
+                        setTimeout(() => {
+                            tag.style.transform = 'translateY(0)';
+                        }, 300);
+                    }, index * 100);
+                });
+            }
+
+            // Trigger wave effect every 5 seconds
+            setInterval(createWaveEffect, 5000);
+
+            // Animated findings list items
+            const findingsItems = document.querySelectorAll('.findings-list li');
+            findingsItems.forEach((item, index) => {
+                item.addEventListener('mouseenter', function() {
+                    const bullet = this.querySelector('.bullet');
+                    bullet.style.transform = 'scale(1.5)';
+                    bullet.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1)';
+                    this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    this.style.borderRadius = '8px';
+                    this.style.padding = '15px 12px';
+                    this.style.transition = 'all 0.3s ease';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    const bullet = this.querySelector('.bullet');
+                    bullet.style.transform = 'scale(1)';
+                    bullet.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4)';
+                    this.style.backgroundColor = 'transparent';
+                    this.style.padding = '12px 0';
+                });
+            });
+
+            // Section icons rotation on hover
+            const sectionIcons = document.querySelectorAll('.icon');
+            sectionIcons.forEach(icon => {
+                const section = icon.closest('.section');
+                section.addEventListener('mouseenter', function() {
+                    icon.style.transform = 'rotate(360deg) scale(1.2)';
+                    icon.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                });
+                
+                section.addEventListener('mouseleave', function() {
+                    icon.style.transform = 'rotate(0deg) scale(1)';
+                });
+            });
+
+            // Parallax effect on scroll
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+                
+                document.querySelector('.poster-container').style.transform = `translateY(${rate * 0.1}px)`;
+            });
+
+            // GitHub link enhanced animation
+            const githubLink = document.querySelector('.github-link');
+            githubLink.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px) scale(1.05)';
+                this.style.background = 'rgba(255, 255, 255, 0.25)';
+                this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.2)';
+                this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+
+            githubLink.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.background = 'rgba(255, 255, 255, 0.1)';
+                this.style.boxShadow = 'none';
+            });
+
+            // Add particle effect background
+            createParticles();
+        });
+
+        // Particle effect function
+        function createParticles() {
+            const particlesContainer = document.createElement('div');
+            particlesContainer.style.position = 'fixed';
+            particlesContainer.style.top = '0';
+            particlesContainer.style.left = '0';
+            particlesContainer.style.width = '100%';
+            particlesContainer.style.height = '100%';
+            particlesContainer.style.pointerEvents = 'none';
+            particlesContainer.style.zIndex = '-1';
+            document.body.appendChild(particlesContainer);
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = `hsla(${Math.random() * 60 + 200}, 70%, 60%, 0.1)`;
+                particle.style.borderRadius = '50%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                const duration = Math.random() * 20 + 10;
+                particle.style.animation = `float ${duration}s ease-in-out infinite`;
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+    </script>
+</body>
+</html> 
